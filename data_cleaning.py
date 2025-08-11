@@ -16,7 +16,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     # 4) Removing duplicate rows
     df.drop_duplicates(inplace=True)
 
-    # 5) Converting necessary data to categorica
+    # 5) Converting necessary data to categorical data
     for col in ["Ship Mode", "Segment", "Region", "Category", "Sub-Category"]:
         df[col] = df[col].astype("category")
 
@@ -28,7 +28,9 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
     # Outputs
     print(f"[data_cleaning] Cleaned rows/columns: {df.shape}")
-    """
+    
+    print(f"[data_cleaning] First five rows: \n{df.head()}")
+
     print(f"[data_cleaning] Missing value counts: \n{df.isnull().sum()}")
     
     print(f"[data_cleaning] Column information: \n{df.dtypes}")
@@ -37,7 +39,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     for col in df.select_dtypes(include='category').columns:
         print(f"{col}: {df[col].unique()}")
 
-    """
+    
     
 
     return df
