@@ -118,10 +118,11 @@ def plot_total_sales_by_segment(df: pd.DataFrame, segment_col: str = "Segment", 
     plt.show()
 
 
-def plot_total_sales_by_region(df: pd.DataFrame, region_col: str = "Region", value_col: str = "Sales", palette: str = "Set1"):
-    region_sales = (df.groupby(region_col, observed=False)[value_col].sum().reset_index())
+def plot_total_sales_by_region(df: pd.DataFrame, region_col: str = "Region", value_col: str = "Sales", palette: str = "magma"):
+    region_sales = (df.groupby(region_col, observed=False)[value_col].sum().reset_index().sort_values(by = value_col, ascending = False))
+    order = region_sales[region_col].tolist()
     plt.figure(figsize=(8, 5))
-    sns.barplot(data=region_sales, x=region_col, y=value_col, hue = region_col, palette=palette)
+    sns.barplot(data=region_sales, x=region_col, y=value_col, palette=palette, order=order)
     plt.title("Total Sales by Region")
     plt.xlabel(region_col)
     plt.ylabel("Total Sales")
@@ -165,7 +166,7 @@ def plot_sales_trend_with_moving_average(df: pd.DataFrame, value_col: str = "Sal
     plt.show()
 
 
-def plot_total_sales_by_category(df: pd.DataFrame, category_col: str = "Category", value_col: str = "Sales", palette: str = "icefire"):
+def plot_total_sales_by_category(df: pd.DataFrame, category_col: str = "Category", value_col: str = "Sales", palette: str = "cubehelix"):
     product_sales_cat = (df.groupby(category_col, observed=False)[value_col].sum().reset_index())
     plt.figure(figsize=(12, 6))
     sns.barplot(data=product_sales_cat, x=value_col, y=category_col, palette=palette)
