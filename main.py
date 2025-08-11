@@ -22,15 +22,15 @@ from time_series import run_time_series
 
 
 def main():
-    # 1) Ham veriyi yükle
+    # 1) Load raw data
     df_raw = load_raw_data("C:\\Users\\stajyer\\Desktop\\GPT\\train.csv")
-    print("[main] Veri yükleme tamam.")
+    print("[main] Data loading complete.")
 
-    # 2) Veriyi temizle
+    # 2) Clean the data
     df_clean = clean_data(df_raw)
-    print("[main] Veri temizleme tamam.")
+    print("[main] Data cleaning complete.")
 
-    # 3) Görselleştirmeler
+    # 3) Visualizations
     plot_sales_distribution(df_clean)
     plot_daily_sales_trend(df_clean)
     plot_weekly_sales_trend(df_clean)
@@ -45,18 +45,18 @@ def main():
     plot_sales_distribution_by_segment_violin(df_clean)    
     plot_sales_trend_with_moving_average(df_clean)
     plot_total_sales_by_category(df_clean)
-    print("[main] Görselleştirmeler tamam.")
+    print("[main] Visualizations complete.")
 
 
     # 4) Modeling 
-    print("[main] Modeling başlıyor...")
+    print("[main] Modeling starting...")
     run_modeling(df_clean)
-    print("[main] Modeling tamam.")
+    print("[main] Modeling complete.")
 
-    # 5) Zaman Serisi (basit hareketli ortalama tahmini)
-    print("[main] Time Series başlıyor...")
+# 5) Time Series (simple moving average forecasting)
+    print("[main] Time Series starting...")
     run_time_series(df_clean)
-    print("[main] Time Series tamam.")
+    print("[main] Time Series complete.")
 
 
 if __name__ == "__main__":

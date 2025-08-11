@@ -54,7 +54,7 @@ def run_time_series(df: pd.DataFrame):
     plt.title('Sales vs. Sales_lag30')
     plt.show()
 
-    print("[time_series] Lag korelasyonları:")
+    print("[time_series] Lag correlations:")
     print(daily_sales_df[['Sales', 'Sales_lag1', 'Sales_lag7', 'Sales_lag30']].corr())
 
     daily_sales_prophet = df.groupby("Order Date")["Sales"].sum().reset_index()

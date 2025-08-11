@@ -2,7 +2,7 @@ import pandas as pd
 
 def load_raw_data(path: str) -> pd.DataFrame:
     df = pd.read_csv(path)          
-    print(f"[data_loader] Yüklenen satır/sütun: {df.shape}")
+    print(f"[data_loader] Loaded rows/columns: {df.shape}")
     return df
 
 

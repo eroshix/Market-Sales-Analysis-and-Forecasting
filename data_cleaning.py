@@ -3,37 +3,37 @@ import numpy as np
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
-    # 1) Boş değer kontrolü
+    # 1) Missing value check
     df = df.dropna(subset=["Postal Code"]).copy()
     
-    # 2) Tür dönüşümü
+    # 2) Type conversion
     df["Order Date"] = pd.to_datetime(df["Order Date"], dayfirst=True)
     df["Ship Date"] = pd.to_datetime(df["Ship Date"], dayfirst=True)
 
-    # 3) Gereksiz sütunları atma
+    # 3) Dropping unnecessary columns
     df.drop(columns=['Row ID', "Customer Name", "Country"], inplace=True)
 
-    # 4) Tekrar eden satırları kaldırma
+    # 4) Removing duplicate rows
     df.drop_duplicates(inplace=True)
 
-    # 5) Gerekli verileri kategorik hale getirme
+    # 5) Converting necessary data to categorica
     for col in ["Ship Mode", "Segment", "Region", "Category", "Sub-Category"]:
         df[col] = df[col].astype("category")
 
-    # 6) Order Date sütununu indeks olarak ayarlama ve sıralama
+    # 6) Setting the Order Date column as the index and sorting
     df.sort_values("Order Date", inplace=True)
     df.set_index("Order Date", inplace=True)
 
     
 
-    # Çıktılar
-    print(f"[data_cleaning] Temizlenmiş satır/sütun: {df.shape}")
+    # Outputs
+    print(f"[data_cleaning] Cleaned rows/columns: {df.shape}")
     """
-    print(f"[data_cleaning] Eksik Değer Sayıları: \n{df.isnull().sum()}")
+    print(f"[data_cleaning] Missing value counts: \n{df.isnull().sum()}")
     
-    print(f"[data_cleaning] Sütun bilgisi: \n{df.dtypes}")
+    print(f"[data_cleaning] Column information: \n{df.dtypes}")
 
-    print("[data_cleaning] Unique Değerler:")
+    print("[data_cleaning] Unique values:")
     for col in df.select_dtypes(include='category').columns:
         print(f"{col}: {df[col].unique()}")
 
