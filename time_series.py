@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from prophet import Prophet
+import pmdarima as pm
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.stattools import adfuller
-from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
 
 def run_time_series(df: pd.DataFrame):
     df["year"] = df.index.year
@@ -30,13 +31,14 @@ def run_time_series(df: pd.DataFrame):
 
     df["season"] = df["month"].apply(get_season)
 
-    daily_sales = df.groupby("Order Date")["Sales"].sum()
 
+    daily_sales = df.groupby("Order Date")["Sales"].sum()
     daily_sales_df = pd.DataFrame({'Sales': daily_sales})
+
     daily_sales_df['Sales_lag1'] = daily_sales_df['Sales'].shift(1)
     daily_sales_df['Sales_lag7'] = daily_sales_df['Sales'].shift(7)
     daily_sales_df['Sales_lag30'] = daily_sales_df['Sales'].shift(30)
-    daily_sales_df = daily_sales_df.dropna()
+    daily_sales_df.dropna(inplace=True)
 
     df = df.join(daily_sales_df[['Sales_lag1', 'Sales_lag7', 'Sales_lag30']])
 
@@ -73,6 +75,10 @@ def run_time_series(df: pd.DataFrame):
     forecasts_prophet_7 = forecasts_prophet[["ds", "yhat"]].tail(7)
 
     prophet.plot(forecasts_prophet)
+    plt.title("7-Day Sales Forecast")
+    plt.xlabel("Date")
+    plt.ylabel("Predicted Sales")
+    plt.tight_layout()
     plt.legend()
     plt.show()
 
@@ -98,13 +104,17 @@ def run_time_series(df: pd.DataFrame):
     plt.tight_layout()
     plt.show()
 
-    from statsmodels.tsa.statespace.sarimax import SARIMAX
-    from statsmodels.tsa.stattools import adfuller
-    from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
-    from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+
+
+
 
     daily_sales_sarima = df.groupby("Order Date")["Sales"].sum().reset_index()
     daily_sales_sarima.set_index("Order Date", inplace=True)
+
+
+
+
 
     full_range = pd.date_range(start=daily_sales_sarima.index.min(), end=daily_sales_sarima.index.max(), freq="D")
     daily_sales_sarima = daily_sales_sarima.reindex(full_range)
@@ -268,3 +278,4 @@ if __name__ == "__main__":
     df_raw   = load_raw_data("C:\\Users\\stajyer\\Desktop\\GPT\\train.csv")
     df_clean = clean_data(df_raw)
     run_time_series(df_clean)
+
