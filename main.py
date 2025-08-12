@@ -53,7 +53,7 @@ def main():
     run_modeling(df_clean)
     print("[main] Modeling complete.")
 
-# 5) Time Series (simple moving average forecasting)
+    # 5) Time Series (simple moving average forecasting)
     print("[main] Time Series starting...")
     run_time_series(df_clean)
     print("[main] Time Series complete.")
