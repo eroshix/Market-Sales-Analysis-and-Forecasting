@@ -21,9 +21,11 @@ def run_modeling(df: pd.DataFrame):
 
     mse = mean_squared_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
+    #mape = mean_absolute_percentage_error(y_test, y_pred) * 100
 
     print("MSE:", mse)
     print("R² Score:", r2)
+    #print("MAPE (%):", mape)
 
     df.columns = df.columns.str.strip()
 

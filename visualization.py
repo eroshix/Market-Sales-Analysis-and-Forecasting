@@ -5,7 +5,7 @@ import seaborn as sns
 def plot_sales_distribution(df: pd.DataFrame, value_col: str = "Sales", bins: int = 30):
     plt.figure(figsize=(9, 5))
     plt.hist(df[value_col], bins=bins, color='pink', edgecolor='black')
-    plt.title(f"{value_col} Distribution")
+    plt.title("Sales Distribution")
     plt.xlabel(value_col)
     plt.ylabel("Frequency")
     plt.grid(True)
@@ -15,7 +15,7 @@ def plot_sales_distribution(df: pd.DataFrame, value_col: str = "Sales", bins: in
 
 def plot_daily_sales_trend(df: pd.DataFrame, date_col: str = "Order Date", value_col: str = "Sales"):
     daily_sales = df["Sales"].resample("D").sum()
-    plt.figure(figsize=(14, 4))
+    plt.figure(figsize=(12, 4))
     plt.plot(daily_sales, color="skyblue")
     plt.title("Daily Sales Trend")
     plt.xlabel("Date")
@@ -27,7 +27,7 @@ def plot_daily_sales_trend(df: pd.DataFrame, date_col: str = "Order Date", value
 
 def plot_weekly_sales_trend(df: pd.DataFrame, date_col: str = "Order Date", value_col: str = "Sales"):
     weekly_sales = df["Sales"].resample("W").sum()
-    plt.figure(figsize=(14, 4))
+    plt.figure(figsize=(12, 4))
     plt.plot(weekly_sales, color="orange")
     plt.title("Weekly Sales Trend")
     plt.xlabel("Date")
@@ -39,7 +39,7 @@ def plot_weekly_sales_trend(df: pd.DataFrame, date_col: str = "Order Date", valu
 
 def plot_monthly_sales_trend(df: pd.DataFrame, date_col: str = "Order Date", value_col: str = "Sales"):
     monthly_sales = df["Sales"].resample("ME").sum()
-    plt.figure(figsize=(14, 4))
+    plt.figure(figsize=(12, 4))
     plt.plot(monthly_sales, color="green")
     plt.title("Monthly Sales Trend")
     plt.xlabel("Date")
@@ -51,7 +51,7 @@ def plot_monthly_sales_trend(df: pd.DataFrame, date_col: str = "Order Date", val
 
 def plot_monthly_sales_by_subcategory(df: pd.DataFrame, subcat_col: str = "Sub-Category", value_col: str = "Sales"):
     monthly_subcat = (df.groupby([pd.Grouper(freq="ME"), subcat_col], observed=False)[value_col].sum().reset_index())
-    plt.figure(figsize=(14, 7))
+    plt.figure(figsize=(12, 6))
     sns.lineplot(data=monthly_subcat, x="Order Date", y=value_col, hue=subcat_col)
     plt.title("Monthly Sales by Sub-Category")
     plt.xlabel("Month")
@@ -64,12 +64,12 @@ def plot_monthly_sales_by_subcategory(df: pd.DataFrame, subcat_col: str = "Sub-C
 
 
 def plot_sales_distribution_with_kde(df: pd.DataFrame, value_col: str = "Sales", bins: int = 50):
-    plt.figure(figsize=(12, 5))
+    plt.figure(figsize=(12, 6))
     
     # Histogram
     plt.subplot(1, 2, 1)
     sns.histplot(df[value_col], bins=bins, color="midnightblue")
-    plt.title(f"{value_col} Histogram Distribution")
+    plt.title("Sales Histogram Distribution")
     plt.xlabel(value_col)
     plt.ylabel("Frequency")
     plt.grid(True)
@@ -77,7 +77,7 @@ def plot_sales_distribution_with_kde(df: pd.DataFrame, value_col: str = "Sales",
     # KDE
     plt.subplot(1, 2, 2)
     sns.kdeplot(df[value_col], color="darkorange", fill=True)
-    plt.title(f"{value_col} KDE Curve")
+    plt.title("Sales KDE Curve")
     plt.xlabel(value_col)
     plt.ylabel("Density")
 
@@ -109,7 +109,7 @@ def plot_sales_by_subcategory(df: pd.DataFrame, subcat_col: str = "Sub-Category"
 
 def plot_total_sales_by_segment(df: pd.DataFrame, segment_col: str = "Segment", value_col: str = "Sales", palette: str = "Set2"):
     segment_sales = (df.groupby(segment_col, observed=False)[value_col].sum().reset_index())
-    plt.figure(figsize=(8, 5))
+    plt.figure(figsize=(9, 5))
     sns.barplot(data=segment_sales, x=segment_col, y=value_col, hue = segment_col, palette=palette)
     plt.title("Total Sales by Segment")
     plt.xlabel(segment_col)
@@ -121,7 +121,7 @@ def plot_total_sales_by_segment(df: pd.DataFrame, segment_col: str = "Segment", 
 def plot_total_sales_by_region(df: pd.DataFrame, region_col: str = "Region", value_col: str = "Sales", palette: str = "magma"):
     region_sales = (df.groupby(region_col, observed=False)[value_col].sum().reset_index().sort_values(by = value_col, ascending = False))
     order = region_sales[region_col].tolist()
-    plt.figure(figsize=(8, 5))
+    plt.figure(figsize=(9, 5))
     sns.barplot(data=region_sales, x=region_col, y=value_col, palette=palette, order=order)
     plt.title("Total Sales by Region")
     plt.xlabel(region_col)
@@ -132,7 +132,7 @@ def plot_total_sales_by_region(df: pd.DataFrame, region_col: str = "Region", val
 
 def plot_total_sales_by_shipping_mode(df: pd.DataFrame, ship_col: str = "Ship Mode", value_col: str = "Sales", palette: str = "Pastel1"):
     ship_sales = (df.groupby(ship_col, observed=False)[value_col].sum().reset_index())
-    plt.figure(figsize=(8, 5))
+    plt.figure(figsize=(9, 5))
     sns.barplot(data=ship_sales, x=ship_col, y=value_col, hue = "Ship Mode", palette=palette)
     plt.title("Total Sales by Shipping Mode")
     plt.xlabel(ship_col)
@@ -142,7 +142,7 @@ def plot_total_sales_by_shipping_mode(df: pd.DataFrame, ship_col: str = "Ship Mo
 
 
 def plot_sales_distribution_by_segment_violin(df: pd.DataFrame, segment_col: str = "Segment", value_col: str = "Sales", palette: str = "muted"):
-    plt.figure(figsize=(8, 5))
+    plt.figure(figsize=(9, 5))
     sns.violinplot(data=df, x=segment_col, y=value_col, hue = segment_col, palette=palette)
     plt.title("Sales Distribution by Segment (Violin Plot)")
     plt.xlabel(segment_col)
@@ -154,7 +154,7 @@ def plot_sales_distribution_by_segment_violin(df: pd.DataFrame, segment_col: str
 def plot_sales_trend_with_moving_average(df: pd.DataFrame, value_col: str = "Sales", window: int = 7):
     daily_sales = df[value_col].resample("D").sum()
     moving_avg = daily_sales.rolling(window=window).mean()
-    plt.figure(figsize=(14, 6))
+    plt.figure(figsize=(12, 6))
     plt.plot(daily_sales, label="Daily Sales", alpha=0.5)
     plt.plot(moving_avg, label=f"{window}-Day Moving Average", linewidth=2.5, color='orange')
     plt.title("Sales Trend with Daily Moving Average")
