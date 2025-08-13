@@ -28,20 +28,17 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
     # Outputs
     print(f"[data_cleaning] Cleaned rows/columns: {df.shape}")
-    
+    print("--------------------------------------------------------------------------------------------------------------------")
     print(f"[data_cleaning] First five rows: \n{df.head()}")
-
+    print("--------------------------------------------------------------------------------------------------------------------")
     print(f"[data_cleaning] Missing value counts: \n{df.isnull().sum()}")
-    
+    print("--------------------------------------------------------------------------------------------------------------------")
     print(f"[data_cleaning] Column information: \n{df.dtypes}")
-
+    print("--------------------------------------------------------------------------------------------------------------------")
     print("[data_cleaning] Unique values:")
     for col in df.select_dtypes(include='category').columns:
         print(f"{col}: {df[col].unique()}")
-
-    
-    
-
+    print("--------------------------------------------------------------------------------------------------------------------")
     return df
 
 
