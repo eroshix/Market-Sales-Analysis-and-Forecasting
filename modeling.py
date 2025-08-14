@@ -1,79 +1,96 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_percentage_error
+from sklearn.metrics import mean_squared_error, r2_score
 
-def run_modeling(df: pd.DataFrame):
+def run_modeling(df: pd.DataFrame, show_plots: bool = True):
 
-    df = df.dropna(subset=["Postal Code", "Sales"])
-    X = df[["Postal Code"]]
-    y = df["Sales"]
+    def mape_ignore_zeros(y_true, y_pred):
+        y_true = np.asarray(y_true)
+        y_pred = np.asarray(y_pred)
+        nz = y_true != 0
+        if nz.sum() == 0:
+            return float("nan")
+        return float(np.mean(np.abs((y_true[nz] - y_pred[nz]) / y_true[nz]) * 100))  
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    df1 = df.copy()
+    df1.columns = df1.columns.str.strip()
 
-    LinModel = LinearRegression()
-    LinModel.fit(X_train, y_train)
+    df1_dum = pd.get_dummies(df1, columns=["Category"], drop_first=True)
+    needed = ["Category_Office Supplies", "Category_Technology"]
+    for col in needed:
+        if col not in df1_dum:
+            df1_dum[col] = 0
+    X = df1_dum[needed]
 
-    y_pred = LinModel.predict(X_test)
-
-    mse = mean_squared_error(y_test, y_pred)
-    r2 = r2_score(y_test, y_pred)
-    #mape = mean_absolute_percentage_error(y_test, y_pred) * 100
-
-    print("MSE:", mse)
-    print("R² Score:", r2)
-    #print("MAPE (%):", mape)
-
-    df.columns = df.columns.str.strip()
-
-    df_encoded = pd.get_dummies(df, columns=["Category"], drop_first=True)
-
-    X = df_encoded[["Category_Office Supplies", "Category_Technology"]]
-    y = df_encoded["Sales"]
+    y = df1_dum["Sales"]
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
     )
 
-    LinModel2 = LinearRegression()
-    LinModel2.fit(X_train, y_train)
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
 
-    y_pred = LinModel2.predict(X_test)
-
-    mse = mean_squared_error(y_test, y_pred)
+    mse  = mean_squared_error(y_test, y_pred)
+    rmse = float(np.sqrt(mse))
     r2 = r2_score(y_test, y_pred)
+    mape = float(mape_ignore_zeros(y_test, y_pred))
 
-    print("MSE:", mse)
-    print("R² Score:", r2)
+    print(f"MSE: {mse:.4f}")
+    print(f"RMSE: {rmse:.4f}")
+    print(f"R²: {r2:.4f}")
+    print(f"MAPE (%): {mape:.2f}")
 
 
-    rmse = np.sqrt(mse)
 
-    def mean_absolute_percentage_error_local(y_test_local, y_pred_local): 
-        y_test_local, y_pred_local = np.array(y_test_local), np.array(y_pred_local)
-        non_zero_idx = y_test_local != 0
-        return np.mean(np.abs((y_test_local[non_zero_idx] - y_pred_local[non_zero_idx]) / y_test_local[non_zero_idx])) * 100
+    if show_plots:
+        ops  = (X_test["Category_Office Supplies"] > 0.5).to_numpy()
+        tech = (X_test["Category_Technology"] > 0.5).to_numpy()
+        
+        cat_labels = np.where(ops, "Office Supplies",
+                        np.where(tech, "Technology", "Furniture"))
+        
+        
+        df_plot = pd.DataFrame({
+            "Category":  cat_labels,
+            "Actual":    y_test.to_numpy(),
+            "Predicted": y_pred
+        })
+        
+        grp = df_plot.groupby("Category")[["Actual", "Predicted"]].mean() 
 
-    mape = mean_absolute_percentage_error_local(y_test, y_pred)
+        order_cats = [c for c in ["Furniture", "Office Supplies", "Technology"] if c in grp.index]
+        grp = grp.loc[order_cats]
 
-    print("MSE:", mse)
-    print("RMSE:", rmse)
-    print("MAPE (%):", mape)
-
-    print(df.columns)
+        x = np.arange(len(grp))
+        width = 0.38
+        plt.figure(figsize=(8, 4.6))
+        plt.bar(x - width/2, grp["Actual"].values,  width, label="Actual")
+        plt.bar(x + width/2, grp["Predicted"].values, width, label="Predicted")
+        plt.xticks(x, order_cats)
+        plt.ylabel("Mean Sales (Test)")
+        plt.title("Actual vs Predicted by Category (Mean)")
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
 
     return {
-        "LinModel": LinModel,
-        "LinModel2": LinModel2,
-        "metrics_last": {"mse": float(mse), "rmse": float(rmse), "r2": float(r2), "mape": float(mape)}
+        "LinModel":  model,
+        "metrics_last": {"mse": float(mse), "rmse": float(rmse), "r2": float(r2), "mape": float(mape)},
+        "metrics": {
+            "model": {"mse": float(mse), "rmse": float(rmse), "r2": float(r2), "mape": float(mape)},
+        },
     }
+
+    
 
 if __name__ == "__main__":
     from data_loader import load_raw_data
     from data_cleaning import clean_data
     df_raw   = load_raw_data("C:\\Users\\stajyer\\Desktop\\GPT\\train.csv")
     df_clean = clean_data(df_raw)
-    run_modeling(df_clean)
+    run_modeling(df_clean, show_plots=True)
