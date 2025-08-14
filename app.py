@@ -24,7 +24,6 @@ st.set_page_config(page_title="Sales Analytics — Streamlit", layout="wide")
 st.title("📊 Market Sales Analytics & Forecasting")
 
 with st.sidebar:
-    st.header("⚙️ Settings")
     data_mode = st.radio(
         "Choose Data Source",
         ["Use 'train.csv' from project folder", "Upload CSV file"],
