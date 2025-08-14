@@ -1,28 +1,24 @@
 
 import os
-import io
 import sys
-import warnings
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# --- Monkey-patch: make any matplotlib/seaborn plt.show() render inside Streamlit ---
 def _st_show(*args, **kwargs):
     st.pyplot(plt.gcf(), clear_figure=True)
     plt.close()
 plt.show = _st_show
 
-# So local imports work when the app is launched from another folder
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Project modules
+
 from data_loader import load_raw_data
 from data_cleaning import clean_data
 import visualization as viz
 from modeling import run_modeling
 from time_series import run_time_series
+
 
 
 st.set_page_config(page_title="Sales Analytics — Streamlit", layout="wide")
