@@ -1,5 +1,5 @@
-
 import os
+import io
 import sys
 import streamlit as st
 import pandas as pd
@@ -20,24 +20,27 @@ from modeling import run_modeling
 from time_series import run_time_series
 
 
-
 st.set_page_config(page_title="Sales Analytics — Streamlit", layout="wide")
-st.title("📊 Sales Analytics & Forecasting")
+st.title("📊 Market Sales Analytics & Forecasting")
 
 with st.sidebar:
-    st.header("⚙️ Ayarlar")
-    data_mode = st.radio("Veri kaynağı seç", ["Projede duran train.csv", "CSV yükle (upload)"], index=0)
+    st.header("⚙️ Settings")
+    data_mode = st.radio(
+        "Choose Data Source",
+        ["Use 'train.csv' from project folder", "Upload CSV file"],
+        index=0
+    )
     default_path = st.text_input(
-        "Dosya yolu (projede duran dosya için)",
+        "File Path (for file in project folder)",
         value="train.csv",
-        help="app.py ile aynı klasördeyse sadece 'train.csv' yazmanız yeterli."
+        help="If the file is in the same folder as app.py, simply type 'train.csv'."
     )
     uploaded = None
-    if data_mode == "CSV yükle (upload)":
-        uploaded = st.file_uploader("CSV dosyası yükle", type=["csv"])
+    if data_mode == "Upload CSV file":
+        uploaded = st.file_uploader("Select and upload a CSV file", type=["csv"])
 
     st.markdown("---")
-    st.caption("Grafik çizimler biraz zaman alabilir. Sabırlı olun 😊")
+    st.caption("Chart rendering may take a moment — thank you for your patience 😊")
 
 @st.cache_data(show_spinner=False)
 def _read_uploaded_csv(file_like) -> pd.DataFrame:
@@ -45,7 +48,6 @@ def _read_uploaded_csv(file_like) -> pd.DataFrame:
 
 @st.cache_data(show_spinner=False)
 def _load_default_csv(path: str) -> pd.DataFrame:
-    # load_raw_data fonksiyonunu kullanarak okuyoruz
     return load_raw_data(path)
 
 def _load_and_clean():
@@ -57,94 +59,95 @@ def _load_and_clean():
     df_clean = clean_data(df_raw)
     return df_raw, df_clean
 
-# --- DATA ---
-st.subheader("1) Veri Yükleme & Temizleme")
-if st.button("Veriyi yükle ve temizle", type="primary"):
-    with st.spinner("Yükleniyor ve temizleniyor..."):
+
+st.subheader("1) Data Loading & Cleaning")
+if st.button("Load and Clean Data", type="primary"):
+    with st.spinner("Loading and cleaning..."):
         try:
             df_raw, df_clean = _load_and_clean()
-            st.success("Veri hazır!")
+            st.success("Data is ready!")
             st.session_state["df_raw"] = df_raw
             st.session_state["df_clean"] = df_clean
         except Exception as e:
-            st.error(f"Bir hata oluştu: {e}")
+            st.error(f"An error occurred: {e}")
+
 
 if "df_clean" in st.session_state:
     df_raw = st.session_state["df_raw"]
     df_clean = st.session_state["df_clean"]
 
-    st.write("**Ham veri (ilk 5 satır):**")
+    st.write("**Raw Data (first 5 rows):**")
     st.dataframe(df_raw.head(), use_container_width=True)
     c1, c2, c3, c4 = st.columns(4)
-    with c1: st.metric("Satır sayısı (ham)", len(df_raw))
-    with c2: st.metric("Sütun sayısı (ham)", df_raw.shape[1])
-    with c3: st.metric("Satır sayısı (temiz)", len(df_clean))
-    with c4: st.metric("Sütun sayısı (temiz)", df_clean.shape[1])
+    with c1: st.metric("Row Count (Raw)", len(df_raw))
+    with c2: st.metric("Column Count (Raw)", df_raw.shape[1])
+    with c3: st.metric("Row Count (Clean)", len(df_clean))
+    with c4: st.metric("Column Count (Clean)", df_clean.shape[1])
 
-    with st.expander("Sütun tipleri (temiz veri)"):
+    with st.expander("Column Types (Clean Data)"):
         dtypes_df = pd.DataFrame({"column": df_clean.columns, "dtype": df_clean.dtypes.astype(str)})
         st.dataframe(dtypes_df, use_container_width=True)
 
-    st.subheader("2) Keşifsel Görselleştirmeler")
-    st.caption("İstediğin grafikleri seç ve çiz.")
-    # Seçim kutuları
+    st.subheader("2) Exploratory Visualizations")
+    st.caption("Select the chart(s) you want to generate.")
+    
     viz_options = {
-        "Satış dağılımı (histogram)": viz.plot_sales_distribution,
-        "Günlük satış trendi": viz.plot_daily_sales_trend,
-        "Haftalık satış trendi": viz.plot_weekly_sales_trend,
-        "Aylık satış trendi": viz.plot_monthly_sales_trend,
-        "Aylık satışlar (Alt-kategori bazında)": viz.plot_monthly_sales_by_subcategory,
-        "Satış dağılımı + KDE": viz.plot_sales_distribution_with_kde,
-        "En çok satış yapan Top-N şehirler": viz.plot_top_n_cities_sales,
-        "Alt-kategori bazında toplam satış": viz.plot_sales_by_subcategory,
-        "Segment bazında toplam satış": viz.plot_total_sales_by_segment,
-        "Bölge bazında toplam satış": viz.plot_total_sales_by_region,
-        "Kargo modu bazında toplam satış": viz.plot_total_sales_by_shipping_mode,
-        "Segment bazında violin dağılım": viz.plot_sales_distribution_by_segment_violin,
-        "Hareketli ortalama trendi": viz.plot_sales_trend_with_moving_average,
-        "Kategori bazında toplam satış": viz.plot_total_sales_by_category,
+        "Sales Distribution (Histogram)": viz.plot_sales_distribution,
+        "Daily Sales Trend": viz.plot_daily_sales_trend,
+        "Weekly Sales Trend": viz.plot_weekly_sales_trend,
+        "Monthly Sales Trend": viz.plot_monthly_sales_trend,
+        "Monthly Sales by Sub-category": viz.plot_monthly_sales_by_subcategory,
+        "Sales Distribution + KDE": viz.plot_sales_distribution_with_kde,
+        "Top-N Cities by Total Sales": viz.plot_top_n_cities_sales,
+        "Total Sales by Sub-category": viz.plot_sales_by_subcategory,
+        "Total Sales by Segment": viz.plot_total_sales_by_segment,
+        "Total Sales by Region": viz.plot_total_sales_by_region,
+        "Total Sales by Shipping Mode": viz.plot_total_sales_by_shipping_mode,
+        "Sales Distribution by Segment (Violin Plot)": viz.plot_sales_distribution_by_segment_violin,
+        "Moving Average Trend": viz.plot_sales_trend_with_moving_average,
+        "Total Sales by Category": viz.plot_total_sales_by_category,
     }
 
-    selected_viz = st.multiselect("Çizilecek grafik(ler)i seç", list(viz_options.keys()))
-    if st.button("Seçili grafikleri çiz"):
-        with st.spinner("Grafikler çiziliyor..."):
+    selected_viz = st.multiselect("Select chart(s) to draw", list(viz_options.keys()))
+    if st.button("Generate Selected Charts"):
+        with st.spinner("Generating charts..."):
             for k in selected_viz:
                 st.markdown(f"**{k}**")
                 try:
                     viz_options[k](df_clean)
                 except Exception as e:
-                    st.error(f"{k} çizilirken hata: {e}")
+                    st.error(f"Error while generating {k}: {e}")
 
-    st.subheader("3) Basit Modelleme (Linear Regression)")
-    st.caption("Mevcut kodlarda iki farklı lineer model deneniyor ve metrikler yazdırılıyor.")
-    if st.button("Modellemeyi çalıştır"):
-        with st.spinner("Eğitiliyor..."):
+    st.subheader("3) Basic Modeling (Linear Regression)")
+    st.caption("Runs two different linear models and displays the metrics.")
+    if st.button("Run Modeling"):
+        with st.spinner("Training..."):
             try:
                 out = run_modeling(df_clean)
                 if isinstance(out, dict) and "metrics_last" in out:
                     m = out["metrics_last"]
-                    st.success("Modelleme tamamlandı!")
+                    st.success("Modeling completed!")
                     c1, c2, c3, c4 = st.columns(4)
                     c1.metric("MSE", f'{m.get("mse", float("nan")):.3f}')
                     c2.metric("RMSE", f'{m.get("rmse", float("nan")):.3f}')
                     c3.metric("R²", f'{m.get("r2", float("nan")):.3f}')
                     c4.metric("MAPE (%)", f'{m.get("mape", float("nan")):.2f}')
                 else:
-                    st.info("Fonksiyon metrik sözlüğü döndürmedi; konsol çıktısına bakın.")
+                    st.info("The function did not return a metrics dictionary; check the console output.")
             except Exception as e:
-                st.error(f"Modelleme çalışırken hata: {e}")
+                st.error(f"Error during modeling: {e}")
 
-    st.subheader("4) Zaman Serisi — 7 Gün Tahmin (Prophet & SARIMA)")
-    st.caption("Hazır fonksiyon 7 günlük test tahmini yapar ve karşılaştırır.")
-    if st.button("Zaman serisi analizi & tahminleri çalıştır"):
-        with st.spinner("Prophet/SARIMA eğitim ve tahmin yapılıyor..."):
+    st.subheader("4) Time Series — 7-Day Forecast (Prophet & SARIMA)")
+    st.caption("Runs the prepared function to forecast the next 7 days and compare results.")
+    if st.button("Run Time Series Analysis & Forecast"):
+        with st.spinner("Training and forecasting with Prophet/SARIMA..."):
             try:
                 ts_out = run_time_series(df_clean)
                 if isinstance(ts_out, dict):
                     p = ts_out.get("prophet", {})
                     s = ts_out.get("sarima", {})
-                    st.success("Tahmin tamamlandı!")
-                    st.markdown("**Özet metrikler (Test Seti)**")
+                    st.success("Forecast completed!")
+                    st.markdown("**Summary Metrics (Test Set)**")
                     cc1, cc2, cc3 = st.columns(3)
                     cc1.metric("Prophet RMSE", f'{p.get("rmse", float("nan")):.2f}')
                     cc2.metric("Prophet MAPE (%)", f'{p.get("mape", float("nan")):.2f}')
@@ -155,13 +158,12 @@ if "df_clean" in st.session_state:
                     dd2.metric("SARIMA MAPE (%)", f'{s.get("mape", float("nan")):.2f}')
                     dd3.metric("SARIMA R²", f'{s.get("r2", float("nan")):.2f}')
 
-                    # En iyi Prophet parametreleri
                     if p.get("best_params"):
                         st.json({"Prophet best_params": p["best_params"]})
                 else:
-                    st.info("Fonksiyon metrik sözlüğü döndürmedi; konsol çıktısına bakın.")
+                    st.info("The function did not return a metrics dictionary; check the console output.")
             except Exception as e:
-                st.error(f"Zaman serisi çalışırken hata: {e}")
+                st.error(f"Error during time series analysis: {e}")
 
 else:
-    st.info("Soldan veri kaynağını seçip **Veriyi yükle ve temizle** düğmesine basın.")
+    st.info("Select a data source from the sidebar and click **Load and Clean Data**.")
