@@ -119,7 +119,7 @@ if "df_clean" in st.session_state:
                     st.error(f"Error while generating {k}: {e}")
 
     st.subheader("3) Basic Modeling (Linear Regression)")
-    st.caption("Runs two different linear models and displays the metrics.")
+    st.caption("Tests a single linear model (Category dummies → Sales) and shows the performance metrics.")
     if st.button("Run Modeling"):
         with st.spinner("Training..."):
             try:
