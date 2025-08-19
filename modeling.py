@@ -48,7 +48,7 @@ def run_modeling(
 
     y = df1["Sales"].astype(float)
 
-    num_cols = ["Quantity", "Discount", "order_month", "order_dow", "ship_delay_days"]
+    num_cols = ["order_month", "order_dow", "ship_delay_days"]
     cat_cols = ["Ship Mode", "Segment", "Region", "Category", "Sub-Category"]
 
     num_cols = [c for c in num_cols if c in df1.columns]
