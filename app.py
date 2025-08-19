@@ -118,7 +118,7 @@ if "df_clean" in st.session_state:
                     st.error(f"Error while generating {k}: {e}")
 
     st.subheader("3) Basic Modeling (Linear Regression)")
-    st.caption("Tests a single linear model (Category dummies → Sales) and shows the performance metrics.")
+    st.caption("Expanded features → Sales; metrics don’t change, plots use zoom/log for readability.")
     clip_lo, clip_hi = st.sidebar.slider("Clip percentiles for Linear Regression (plots only)", 0, 100, (1, 99), 1)
     use_log = st.sidebar.checkbox("Use log1p axes for plots", False)
     if st.button("Run Modeling"):
