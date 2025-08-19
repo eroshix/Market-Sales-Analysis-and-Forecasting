@@ -119,10 +119,17 @@ if "df_clean" in st.session_state:
 
     st.subheader("3) Basic Modeling (Linear Regression)")
     st.caption("Tests a single linear model (Category dummies → Sales) and shows the performance metrics.")
+    clip_lo, clip_hi = st.sidebar.slider("Clip percentiles for Linear Regression (plots only)", 0, 100, (1, 99), 1)
+    use_log = st.sidebar.checkbox("Use log1p axes for plots", False)
     if st.button("Run Modeling"):
         with st.spinner("Training..."):
             try:
-                out = run_modeling(df_clean)
+                out = run_modeling(
+                    df_clean,
+                    show_plots=True,
+                    clip_quantiles=(clip_lo, clip_hi),
+                    log_scale=use_log,
+                )
                 if isinstance(out, dict) and "metrics_last" in out:
                     m = out["metrics_last"]
                     st.success("Modeling completed!")
