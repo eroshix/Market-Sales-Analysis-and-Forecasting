@@ -165,7 +165,14 @@ if "df_clean" in st.session_state:
                     dd3.metric("SARIMA R²", f'{s.get("r2", float("nan")):.2f}')
 
                     if p.get("best_params"):
-                        st.json({"Prophet best_params": p["best_params"]})
+                        st.json({"Prophet best_params": p["best_params"]
+                    })
+                    if s.get("order") and s.get("seasonal_order"):
+                        st.json({
+                            "SARIMA order": s["order"],
+                            "SARIMA seasonal_order (P,D,Q,m)": s["seasonal_order"]
+                    })
+
                 else:
                     st.info("The function did not return a metrics dictionary; check the console output.")
             except Exception as e:
