@@ -288,6 +288,6 @@ def run_time_series(df: pd.DataFrame):
 if __name__ == "__main__":
     from data_loader import load_raw_data
     from data_cleaning import clean_data
-    df_raw   = load_raw_data("C:\\Users\\stajyer\\Desktop\\GPT\\train.csv")
+    df_raw = load_raw_data("C:\\Users\\stajyer\\Desktop\\Market-Sales-Analysis-and-Forecasting\\train.csv")
     df_clean = clean_data(df_raw)
     run_time_series(df_clean)

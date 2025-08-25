@@ -23,7 +23,7 @@ from time_series import run_time_series
 
 def main():
     # 1) Load raw data
-    df_raw = load_raw_data("C:\\Users\\stajyer\\Desktop\\GPT\\train.csv")
+    df_raw = load_raw_data("C:\\Users\\stajyer\\Desktop\\Market-Sales-Analysis-and-Forecasting\\train.csv")
     print("[main] Data loading complete.")
 
     # 2) Clean the data

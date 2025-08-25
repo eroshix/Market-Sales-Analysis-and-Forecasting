@@ -167,6 +167,6 @@ def run_modeling(
 if __name__ == "__main__":
     from data_loader import load_raw_data
     from data_cleaning import clean_data
-    df_raw   = load_raw_data("C:\\Users\\stajyer\\Desktop\\GPT\\train.csv")
+    df_raw = load_raw_data("C:\\Users\\stajyer\\Desktop\\Market-Sales-Analysis-and-Forecasting\\train.csv")
     df_clean = clean_data(df_raw)
     run_modeling(df_clean, show_plots=True, clip_quantiles=(1, 98), log_scale=True)

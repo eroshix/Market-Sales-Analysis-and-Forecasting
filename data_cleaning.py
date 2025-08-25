@@ -44,6 +44,6 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
     from data_loader import load_raw_data
-    df_raw = load_raw_data("C:\\Users\\stajyer\\Desktop\\GPT\\train.csv")
+    df_raw = load_raw_data("C:\\Users\\stajyer\\Desktop\\Market-Sales-Analysis-and-Forecasting\\train.csv")
     df_clean = clean_data(df_raw)
     print(df_clean.head())
