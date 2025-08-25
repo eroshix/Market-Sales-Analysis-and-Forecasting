@@ -7,5 +7,5 @@ def load_raw_data(path: str) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    df_raw = load_raw_data("C:\\Users\\stajyer\\Desktop\\GPT\\train.csv")
+    df_raw = load_raw_data("C:\\Users\\stajyer\\Desktop\\Market-Sales-Analysis-and-Forecasting\\train.csv")
     print(df_raw.head())
